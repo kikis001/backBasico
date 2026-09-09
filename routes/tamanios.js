@@ -1,29 +1,15 @@
 const express = require("express");
+const tamaniosRepository = require("../repositories/tamanios.repository");
 
 const router = express.Router();
 
-const tamanios = [
-  {
-    id: 1,
-    nombre: "Chica",
-  },
-  {
-    id: 2,
-    nombre: "Mediana",
-  },
-  {
-    id: 3,
-    nombre: "Grande",
-  },
-];
-
 router.get("/", (req, res) => {
-  return res.status(200).json(tamanios);
+  return res.status(200).json(tamaniosRepository.obtenerTodos());
 });
 
 router.get("/:id", (req, res) => {
   const { id } = req.params;
-  const tamanio = tamanios.find((t) => t.id === Number(id));
+  const tamanio = tamaniosRepository.obtenerPorId(id);
 
   if (!tamanio) {
     return res.status(404).json({ message: "Tamaño no encontrado" });
@@ -45,13 +31,13 @@ router.post("/", (req, res) => {
   if (!id || !nombre) {
     return res.status(400).json({ message: 'El id y el nombre son obligatorios' });
   }
-  const existe = tamanios.some((t) => t.id === Number(id));
+  const existe = tamaniosRepository.obtenerPorId(id);
   if (existe) {
     return res.status(400).json({ message: 'El id ya existe' });
   }
   const tamanio = new TamanioDto(Number(id), nombre);
-  tamanios.push(tamanio);
-  return res.status(201).json(tamanios);
+  tamaniosRepository.crear(tamanio);
+  return res.status(201).json(tamaniosRepository.obtenerTodos());
 });
 
 router.put("/:id", (req, res) => {
@@ -62,24 +48,22 @@ router.put("/:id", (req, res) => {
     return res.status(400).json({ message: 'El nombre es obligatorio' });
   }
 
-  const tamanio = tamanios.find((t) => t.id === Number(id));
-  if (!tamanio) {
+  const tamanioActualizado = tamaniosRepository.actualizar(id, { nombre });
+  if (!tamanioActualizado) {
     return res.status(404).json({ message: 'Tamaño no encontrado' });
   }
 
-  tamanio.nombre = nombre;
-  return res.status(200).json({ message: 'Tamaño actualizado con éxito', data: tamanio });
+  return res.status(200).json({ message: 'Tamaño actualizado con éxito', data: tamanioActualizado });
 });
 
 router.delete("/:id", (req, res) => {
   const { id } = req.params;
-  const index = tamanios.findIndex((t) => t.id === Number(id));
+  const eliminado = tamaniosRepository.eliminar(id);
 
-  if (index === -1) {
+  if (!eliminado) {
     return res.status(404).json({ message: 'Tamaño no encontrado' });
   }
 
-  const eliminado = tamanios.splice(index, 1)[0];
   return res.status(200).json({ message: 'Tamaño eliminado con éxito', data: eliminado });
 });
 

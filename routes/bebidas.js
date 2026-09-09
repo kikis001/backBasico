@@ -1,21 +1,7 @@
 const express = require("express");
+const bebidasRepository = require("../repositories/bebidas.repository");
 
 const router = express.Router();
-
-const bebidas = [
-  {
-    id: 1,
-    nombre: "Coca-Cola",
-  },
-  {
-    id: 2,
-    nombre: "Sprite",
-  },
-  {
-    id: 3,
-    nombre: "Agua",
-  },
-];
 
 class BebidaDto {
   constructor(id, nombre) {
@@ -25,12 +11,12 @@ class BebidaDto {
 }
 
 router.get("/", (req, res) => {
-  return res.status(200).json(bebidas);
+  return res.status(200).json(bebidasRepository.obtenerTodos());
 });
 
 router.get("/:id", (req, res) => {
   const { id } = req.params;
-  const bebida = bebidas.find((b) => b.id === Number(id));
+  const bebida = bebidasRepository.obtenerPorId(id);
 
   if (!bebida) {
     return res.status(404).json({ message: "Bebida no encontrada" });
@@ -45,13 +31,13 @@ router.post("/", (req, res) => {
   if (!id || !nombre) {
     return res.status(400).json({ message: "El id y el nombre son obligatorios" });
   }
-  const existe = bebidas.some((b) => b.id === Number(id));
+  const existe = bebidasRepository.obtenerPorId(id);
   if (existe) {
     return res.status(400).json({ message: "El id ya existe" });
   }
   const bebida = new BebidaDto(Number(id), nombre);
-  bebidas.push(bebida);
-  return res.status(201).json(bebidas);
+  bebidasRepository.crear(bebida);
+  return res.status(201).json(bebidasRepository.obtenerTodos());
 });
 
 router.put("/:id", (req, res) => {
@@ -62,24 +48,22 @@ router.put("/:id", (req, res) => {
     return res.status(400).json({ message: "El nombre es obligatorio" });
   }
 
-  const bebida = bebidas.find((b) => b.id === Number(id));
-  if (!bebida) {
+  const bebidaActualizada = bebidasRepository.actualizar(id, { nombre });
+  if (!bebidaActualizada) {
     return res.status(404).json({ message: "Bebida no encontrada" });
   }
 
-  bebida.nombre = nombre;
-  return res.status(200).json({ message: "Bebida actualizada con éxito", data: bebida });
+  return res.status(200).json({ message: "Bebida actualizada con éxito", data: bebidaActualizada });
 });
 
 router.delete("/:id", (req, res) => {
   const { id } = req.params;
-  const index = bebidas.findIndex((b) => b.id === Number(id));
+  const eliminada = bebidasRepository.eliminar(id);
 
-  if (index === -1) {
+  if (!eliminada) {
     return res.status(404).json({ message: "Bebida no encontrada" });
   }
 
-  const eliminada = bebidas.splice(index, 1)[0];
   return res.status(200).json({ message: "Bebida eliminada con éxito", data: eliminada });
 });
 

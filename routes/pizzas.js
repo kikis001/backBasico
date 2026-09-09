@@ -1,21 +1,7 @@
 const express = require("express");
+const pizzasRepository = require("../repositories/pizzas.repository");
 
 const router = express.Router();
-
-const pizzas = [
-  {
-    id: 1,
-    nombre: "Pepperoni",
-  },
-  {
-    id: 2,
-    nombre: "Hawaiana",
-  },
-  {
-    id: 3,
-    nombre: "Mexicana",
-  },
-];
 
 class PizzaDto {
   constructor(id, nombre) {
@@ -25,12 +11,12 @@ class PizzaDto {
 }
 
 router.get("/", (req, res) => {
-  return res.status(200).json(pizzas);
+  return res.status(200).json(pizzasRepository.obtenerTodos());
 });
 
 router.get("/:id", (req, res) => {
   const { id } = req.params;
-  const pizza = pizzas.find((p) => p.id === Number(id));
+  const pizza = pizzasRepository.obtenerPorId(id);
 
   if (!pizza) {
     return res.status(404).json({ message: "Pizza no encontrada" });
@@ -45,13 +31,13 @@ router.post("/", (req, res) => {
   if (!id || !nombre) {
     return res.status(400).json({ message: "El id y el nombre son obligatorios" });
   }
-  const existe = pizzas.some((p) => p.id === Number(id));
+  const existe = pizzasRepository.obtenerPorId(id);
   if (existe) {
     return res.status(400).json({ message: "El id ya existe" });
   }
   const pizza = new PizzaDto(Number(id), nombre);
-  pizzas.push(pizza);
-  return res.status(201).json(pizzas);
+  pizzasRepository.crear(pizza);
+  return res.status(201).json(pizzasRepository.obtenerTodos());
 });
 
 router.put("/:id", (req, res) => {
@@ -62,25 +48,23 @@ router.put("/:id", (req, res) => {
     return res.status(400).json({ message: "El nombre es obligatorio" });
   }
 
-  const pizza = pizzas.find((p) => p.id === Number(id));
-  if (!pizza) {
+  const pizzaActualizada = pizzasRepository.actualizar(id, { nombre });
+  if (!pizzaActualizada) {
     return res.status(404).json({ message: "Pizza no encontrada" });
   }
 
-  pizza.nombre = nombre;
-  return res.status(200).json({ message: "Pizza actualizada con éxito", data: pizza });
+  return res.status(200).json({ message: "Pizza actualizada con éxito", data: pizzaActualizada });
 });
 
 /* qué hueva alch */
 router.delete("/:id", (req, res) => {
   const { id } = req.params;
-  const index = pizzas.findIndex((p) => p.id === Number(id));
+  const eliminada = pizzasRepository.eliminar(id);
 
-  if (index === -1) {
+  if (!eliminada) {
     return res.status(404).json({ message: "Pizza no encontrada" });
   }
 
-  const eliminada = pizzas.splice(index, 1)[0];
   return res.status(200).json({ message: "Pizza eliminada con éxito", data: eliminada });
 });
 
