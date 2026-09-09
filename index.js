@@ -1,4 +1,5 @@
 const express = require("express");
+const { databaseService } = require("./config/database");
 
 const pizzasRoutes = require("./routes/pizzas");
 const tamaniosRoutes = require("./routes/tamanios");
@@ -20,6 +21,7 @@ app.use('/api/v1/pizzas', pizzasRoutes);
 app.use('/api/v1/tamanios', tamaniosRoutes);
 app.use('/api/v1/bebidas', bebidasRoutes);
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  await databaseService.connect();
   console.log(`http://localhost:${PORT}`);
 });
