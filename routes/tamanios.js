@@ -21,6 +21,17 @@ router.get("/", (req, res) => {
   return res.status(200).json(tamanios);
 });
 
+router.get("/:id", (req, res) => {
+  const { id } = req.params;
+  const tamanio = tamanios.find((t) => t.id === Number(id));
+
+  if (!tamanio) {
+    return res.status(404).json({ message: "Tamaño no encontrado" });
+  }
+
+  return res.status(200).json(tamanio);
+});
+
 // dto
 class TamanioDto {
   constructor(id, nombre) {

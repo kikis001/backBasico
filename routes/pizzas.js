@@ -28,6 +28,18 @@ router.get("/", (req, res) => {
   return res.status(200).json(pizzas);
 });
 
+router.get("/:id", (req, res) => {
+  const { id } = req.params;
+  const pizza = pizzas.find((p) => p.id === Number(id));
+
+  if (!pizza) {
+    return res.status(404).json({ message: "Pizza no encontrada" });
+  }
+
+  return res.status(200).json(pizza);
+});
+
+// crear
 router.post("/", (req, res) => {
   const { id, nombre } = req.body;
   if (!id || !nombre) {

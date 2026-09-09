@@ -28,6 +28,18 @@ router.get("/", (req, res) => {
   return res.status(200).json(bebidas);
 });
 
+router.get("/:id", (req, res) => {
+  const { id } = req.params;
+  const bebida = bebidas.find((b) => b.id === Number(id));
+
+  if (!bebida) {
+    return res.status(404).json({ message: "Bebida no encontrada" });
+  }
+
+  return res.status(200).json(bebida);
+});
+
+// crear
 router.post("/", (req, res) => {
   const { id, nombre } = req.body;
   if (!id || !nombre) {
