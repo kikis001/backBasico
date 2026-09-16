@@ -12,7 +12,7 @@ class TamaniosRepository {
   }
 
   obtenerPorId(id) {
-    return this.tamanios.find((t) => t.id === Number(id));
+    return this.tamanios.find((t) => t.id === id);
   }
 
   crear(data) {
@@ -28,7 +28,7 @@ class TamaniosRepository {
   }
 
   eliminar(id) {
-    const index = this.tamanios.findIndex((t) => t.id === Number(id));
+    const index = this.tamanios.findIndex((t) => t.id === id);
     if (index === -1) return null;
     return this.tamanios.splice(index, 1)[0];
   }

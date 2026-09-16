@@ -12,7 +12,7 @@ class BebidasRepository {
   }
 
   obtenerPorId(id) {
-    return this.bebidas.find((b) => b.id === Number(id));
+    return this.bebidas.find((b) => b.id === id);
   }
 
   crear(data) {
@@ -28,7 +28,7 @@ class BebidasRepository {
   }
 
   eliminar(id) {
-    const index = this.bebidas.findIndex((b) => b.id === Number(id));
+    const index = this.bebidas.findIndex((b) => b.id === id);
     if (index === -1) return null;
     return this.bebidas.splice(index, 1)[0];
   }

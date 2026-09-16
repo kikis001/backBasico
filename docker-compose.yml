@@ -1,0 +1,9 @@
+services:
+  mongo:
+    image: "mongo:8.0"
+    env_file:
+      - .env.dev
+    ports:
+      - 27017:27017
+    volumes:
+      - "./mongo_data:/data/db"

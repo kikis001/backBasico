@@ -1,5 +1,6 @@
 const express = require("express");
 const bebidasRepository = require("../repositories/bebidas.repository");
+const { transformarIdParametro, transformarIdCuerpo } = require("../middlewares/id.middleware");
 
 const router = express.Router();
 
@@ -14,8 +15,8 @@ router.get("/", (req, res) => {
   return res.status(200).json(bebidasRepository.obtenerTodos());
 });
 
-router.get("/:id", (req, res) => {
-  const { id } = req.params;
+router.get("/:id", transformarIdParametro, (req, res) => {
+  const { id } = req;
   const bebida = bebidasRepository.obtenerPorId(id);
 
   if (!bebida) {
@@ -26,7 +27,7 @@ router.get("/:id", (req, res) => {
 });
 
 // crear
-router.post("/", (req, res) => {
+router.post("/", transformarIdCuerpo, (req, res) => {
   const { id, nombre } = req.body;
   if (!id || !nombre) {
     return res.status(400).json({ message: "El id y el nombre son obligatorios" });
@@ -35,13 +36,13 @@ router.post("/", (req, res) => {
   if (existe) {
     return res.status(400).json({ message: "El id ya existe" });
   }
-  const bebida = new BebidaDto(Number(id), nombre);
+  const bebida = new BebidaDto(id, nombre);
   bebidasRepository.crear(bebida);
   return res.status(201).json(bebidasRepository.obtenerTodos());
 });
 
-router.put("/:id", (req, res) => {
-  const { id } = req.params;
+router.put("/:id", transformarIdParametro, (req, res) => {
+  const { id } = req;
   const { nombre } = req.body;
 
   if (!nombre) {
@@ -56,8 +57,8 @@ router.put("/:id", (req, res) => {
   return res.status(200).json({ message: "Bebida actualizada con éxito", data: bebidaActualizada });
 });
 
-router.delete("/:id", (req, res) => {
-  const { id } = req.params;
+router.delete("/:id", transformarIdParametro, (req, res) => {
+  const { id } = req;
   const eliminada = bebidasRepository.eliminar(id);
 
   if (!eliminada) {

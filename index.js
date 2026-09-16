@@ -7,7 +7,7 @@ const bebidasRoutes = require("./routes/bebidas");
 
 const app = express();
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 
 app.use(express.json());
@@ -22,6 +22,6 @@ app.use('/api/v1/tamanios', tamaniosRoutes);
 app.use('/api/v1/bebidas', bebidasRoutes);
 
 app.listen(PORT, async () => {
-  await databaseService.connect();
+  await databaseService.conectar();
   console.log(`http://localhost:${PORT}`);
 });
