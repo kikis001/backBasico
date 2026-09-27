@@ -29,7 +29,6 @@ class PizzasRepository {
   }
 
 
-
   async obtenerPorId(id) {
     const document = await this.obtenerColeccion().findOne({
       _id: id,
